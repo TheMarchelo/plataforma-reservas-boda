@@ -1,0 +1,10 @@
+# Backend Secrets
+backend/serviceAccountKey.json
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env

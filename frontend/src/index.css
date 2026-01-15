@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-royal-blue: #0047AB;
+  --color-gold: #D4AF37;
+  --color-dark-black: #1A1A1A;
+  --color-pure-white: #FFFFFF;
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+@layer base {
+  body {
+    /* bg-gray-50 is standard, text-dark-black uses our var */
+    @apply bg-gray-50 text-dark-black;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif text-royal-blue;
+  }
+}

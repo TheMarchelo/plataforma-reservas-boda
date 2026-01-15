@@ -1,0 +1,6 @@
+DOC xO5kTwogo3A1GSe1HZJu ERROR: models.Guest() got multiple values for keyword argument 'id'
+DATA: {'nombres_invitados': None, 'id': 'xO5kTwogo3A1GSe1HZJu', 'nombre_completo': 'asdf', 'familia': 'asdf', 'seat_id': None, 'confirmado': True, 'cantidad_invitados': 2}
+
+DOC xO5kTwogo3A1GSe1HZJu ERROR: models.Guest() got multiple values for keyword argument 'id'
+DATA: {'nombres_invitados': None, 'id': 'xO5kTwogo3A1GSe1HZJu', 'nombre_completo': 'asdf', 'familia': 'asdf', 'seat_id': None, 'confirmado': True, 'cantidad_invitados': 2}
+
