@@ -79,12 +79,21 @@ def reserve_seat(seat_id: str, guest_id: str):
     
     return {"message": "Asiento reservado con éxito"}
 
+from pydantic import BaseModel
+
+class SeatBatchRequest(BaseModel):
+    guest_id: str
+    seat_ids: List[str]
+
 @router.put("/reserve-batch")
-def reserve_seats_batch(guest_id: str, seat_ids: List[str]):
+def reserve_seats_batch(request: SeatBatchRequest):
     """Reservar múltiples asientos: actualiza asientos y confirma invitado"""
     db = get_firestore_db()
     batch = db.batch()
     
+    guest_id = request.guest_id
+    seat_ids = request.seat_ids
+
     # 1. Obtener info del invitado para el nombre y actualizar status
     guest_ref = db.collection("invitados").document(guest_id)
     guest_doc = guest_ref.get()
@@ -98,7 +107,21 @@ def reserve_seats_batch(guest_id: str, seat_ids: List[str]):
     # Confirmar invitado
     batch.update(guest_ref, {"confirmado": True})
     
-    # 2. Actualizar cada asiento
+    # 1.5. Liberar asientos previos que YA NO están en la nueva lista
+    # Buscar todos los asientos de este guest
+    current_seats_ref = db.collection("hacientos").where("assigned_guest_id", "==", guest_id)
+    current_seats = current_seats_ref.get()
+    
+    for seat in current_seats:
+        if seat.id not in seat_ids:
+            # Liberar
+            batch.update(seat.reference, {
+                "status": "available",
+                "assigned_guest_id": None,
+                "assigned_guest_name": None
+            })
+
+    # 2. Actualizar cada asiento nuevo
     for seat_id in seat_ids:
         doc_ref = db.collection("hacientos").document(seat_id)
         doc = doc_ref.get()
@@ -106,8 +129,12 @@ def reserve_seats_batch(guest_id: str, seat_ids: List[str]):
         if not doc.exists:
              raise HTTPException(status_code=404, detail=f"Asiento {seat_id} no encontrado")
         
-        if doc.to_dict().get("status") != "available":
-             raise HTTPException(status_code=400, detail=f"Asiento {seat_id} ya ocupado")
+        # Permitir re-asignar si ya es del mismo user? O si se quiere corregir.
+        # Por ahora check simple de ocupado por otro.
+        seat_data = doc.to_dict()
+        if seat_data.get("status") != "available" and seat_data.get("assigned_guest_id") != guest_id:
+             # Si está ocupado por ALGUIEN MAS, error. Si es el mismo, ok (idempotente)
+             raise HTTPException(status_code=400, detail=f"Asiento {seat_id} ya ocupado por otro invitado")
              
         batch.update(doc_ref, {
             "status": "occupied",
@@ -116,7 +143,7 @@ def reserve_seats_batch(guest_id: str, seat_ids: List[str]):
         })
         
     batch.commit()
-    return {"message": "Asientos reservados y asistencia confirmada"}
+    return {"message": "Asignación actualizada correctamente"}
 
 @router.post("/reset")
 def reset_all_seats():

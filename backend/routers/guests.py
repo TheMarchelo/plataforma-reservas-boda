@@ -76,7 +76,6 @@ def update_guest(guest_id: str, guest: GuestCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{guest_id}")
-@router.delete("/{guest_id}")
 def delete_guest(guest_id: str):
     db = get_firestore_db()
     batch = db.batch()

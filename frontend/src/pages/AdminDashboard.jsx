@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import GuestModal from '../components/GuestModal';
 import { useNavigate } from 'react-router-dom';
+import AdminNavbar from '../components/AdminNavbar';
 
 export default function AdminDashboard() {
     const [guests, setGuests] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingGuest, setEditingGuest] = useState(null);
+    const [guestToDelete, setGuestToDelete] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    // navigate unused for logout now handled in navbar, but kept if needed for other things
     const navigate = useNavigate();
 
     // Cargar invitados
@@ -27,11 +31,6 @@ export default function AdminDashboard() {
     useEffect(() => {
         fetchGuests();
     }, []);
-
-    const handleLogout = () => {
-        localStorage.removeItem('adminToken');
-        navigate('/admin/login');
-    };
 
     const handleSaveGuest = async (guestData) => {
         try {
@@ -57,13 +56,19 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("¿Seguro que deseas eliminar este invitado?")) return;
+    const handleDelete = (guest) => {
+        setGuestToDelete(guest);
+    };
+
+    const confirmDelete = async () => {
+        if (!guestToDelete) return;
         try {
-            await axios.delete(`http://localhost:8000/guests/${id}`);
+            await axios.delete(`http://localhost:8000/guests/${guestToDelete.id}`);
             fetchGuests();
+            setGuestToDelete(null);
         } catch (error) {
             console.error("Error eliminando", error);
+            alert("Error al eliminar invitado");
         }
     };
 
@@ -79,15 +84,9 @@ export default function AdminDashboard() {
             }
         }
     };
-
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
-            <header className="bg-royal-blue text-white p-4 flex justify-between items-center shadow-md">
-                <h1 className="text-xl font-serif font-bold tracking-wide">Administración Boda</h1>
-                <button onClick={handleLogout} className="text-gold font-semibold hover:text-yellow-200 uppercase text-sm tracking-wider">
-                    Cerrar Sesión
-                </button>
-            </header>
+            <AdminNavbar />
             <main className="p-8 max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-3xl text-dark-black font-serif">Lista de Invitados</h2>
@@ -97,6 +96,12 @@ export default function AdminDashboard() {
                             className="bg-red-500 text-white px-4 py-2 rounded font-bold shadow hover:bg-red-600 transition"
                         >
                             Liberar Mesas
+                        </button>
+                        <button
+                            onClick={() => navigate('/admin/asignar')}
+                            className="bg-blue-600 text-white px-4 py-2 rounded font-bold shadow hover:bg-blue-700 transition"
+                        >
+                            Asignar Asientos
                         </button>
                         <button
                             onClick={() => { setEditingGuest(null); setIsModalOpen(true); }}
@@ -150,7 +155,7 @@ export default function AdminDashboard() {
                                                 Editar
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(guest.id)}
+                                                onClick={() => handleDelete(guest)}
                                                 className="text-red-500 hover:text-red-700 font-semibold text-sm"
                                             >
                                                 Eliminar
@@ -170,6 +175,33 @@ export default function AdminDashboard() {
                 onSave={handleSaveGuest}
                 guest={editingGuest}
             />
+
+            {/* Modal Confirmación Eliminación */}
+            {guestToDelete && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-2xl p-6 max-w-sm w-full transform transition-all scale-100">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">¿Eliminar Invitado?</h3>
+                        <p className="text-gray-600 mb-6">
+                            ¿Estás seguro de que deseas eliminar a <span className="font-bold text-royal-blue">{guestToDelete.nombre_completo}</span>?
+                            <br /><span className="text-xs text-red-500 mt-2 block">Esta acción liberará sus asientos asignados.</span>
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setGuestToDelete(null)}
+                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded font-medium transition"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 bg-red-500 text-white rounded font-bold hover:bg-red-600 shadow-lg transition"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

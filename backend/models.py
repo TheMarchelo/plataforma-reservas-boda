@@ -40,3 +40,4 @@ class Seat(BaseModel):
     status: SeatStatus
     section: FamilySide # Para mostrar/ocultar según familia
     assigned_guest_id: Optional[str] = None
+    assigned_guest_name: Optional[str] = None

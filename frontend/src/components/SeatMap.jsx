@@ -2,24 +2,22 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // Helper para obtener estilo según estado
-const getSeatColor = (status, isMyFamily, isSelected) => {
-    if (status === 'locked' || status === 'occupied') {
-        return 'bg-gray-300 text-gray-500 cursor-not-allowed border border-gray-300';
+// Helper para obtener estilo según estado
+const getSeatColor = (status, id, isSelected) => {
+    if (isSelected) {
+        return 'bg-green-500 text-white shadow-lg ring-2 ring-green-400 border-2 border-white scale-110';
     }
-    // Desbloqueo global: Mostrar disponible para todos
-    // if (!isMyFamily) return 'bg-gray-100 text-gray-300 cursor-not-allowed opacity-50';
-
-    if (isSelected) return 'bg-gold text-dark-black scale-110 shadow-lg border-2 border-white ring-2 ring-gold';
-    return 'bg-royal-blue text-white hover:bg-blue-600 cursor-pointer shadow-md hover:shadow-xl transform hover:-translate-y-1';
+    if (id === 'NOVIO' || id === 'NOVIA') {
+        return 'bg-gold text-white shadow-lg ring-2 ring-gold border-2 border-white';
+    }
+    if (status === 'locked' || status === 'occupied') {
+        return 'bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-100';
+    }
+    return 'bg-royal-blue text-white hover:bg-blue-600 cursor-pointer shadow-sm';
 };
 
-export default function SeatMap({ seats, selectedFamily, onSelectSeat, currentSelection }) {
-    // 3 Mesas (30 total)
-    // Mesa 1: A1-A10 (10 Inv)
-    // Mesa 2: A11-A18 (8 Inv) + NOVIO + NOVIA (2) = 10 Total
-    // Mesa 3: A19-A28 (10 Inv)
-
-    // Ordenar numéricamente para garantizar layout correcto (A1, A2, A3... no A1, A10, A2)
+export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) {
+    // Ordenar numéricamente
     const sortByNumber = (a, b) => {
         const nA = parseInt(a.id.substring(1));
         const nB = parseInt(b.id.substring(1));
@@ -29,200 +27,126 @@ export default function SeatMap({ seats, selectedFamily, onSelectSeat, currentSe
     const mesa1 = seats.filter(s => { const n = parseInt(s.id.substring(1)); return n >= 1 && n <= 10; }).sort(sortByNumber);
     const mesa2 = seats.filter(s => { const n = parseInt(s.id.substring(1)); return n >= 11 && n <= 18; }).sort(sortByNumber);
     const mesa3 = seats.filter(s => { const n = parseInt(s.id.substring(1)); return n >= 19 && n <= 28; }).sort(sortByNumber);
-
     const novios = seats.filter(s => s.id === 'NOVIO' || s.id === 'NOVIA');
 
-    const renderSeat = (seat) => {
+    const renderSeat = (seat, position = 'bottom') => {
         if (!seat) return null;
 
-        // Acceso Global
-        const isMyFamily = true;
-
-        const isSelected = Array.isArray(currentSelection)
-            ? currentSelection.find(s => s.id === seat.id)
-            : currentSelection?.id === seat.id;
-
-        // Render especial para Novios
-        if (seat.id === 'NOVIO' || seat.id === 'NOVIA') {
-            return (
-                <div key={seat.id} className="relative flex flex-col items-center group z-20 mx-1">
-                    <div className="w-12 h-12 rounded-full bg-gold text-white flex items-center justify-center shadow-lg border-2 border-white ring-2 ring-gold cursor-default text-[9px] font-bold uppercase">
-                        {seat.label}
-                    </div>
-                </div>
-            );
-        }
-
         const isOccupied = seat.status === 'occupied' || seat.status === 'locked';
+        const isNovio = seat.id === 'NOVIO' || seat.id === 'NOVIA';
+        const isSelected = currentSelection.some(s => s.id === seat.id);
+
+        const getOffsetClass = () => {
+            switch (position) {
+                case 'top': return '-top-10 left-1/2 -translate-x-1/2 w-max';
+                case 'bottom': return 'top-11 left-1/2 -translate-x-1/2 w-max';
+                case 'left': return 'top-1/2 left-[110%] -translate-y-1/2 w-[200px] pl-1 text-left';
+                case 'right': return 'top-1/2 right-[110%] -translate-y-1/2 w-[200px] pr-1 text-right';
+                default: return 'top-11 left-1/2 -translate-x-1/2 w-max';
+            }
+        };
 
         return (
-            <div key={seat.id} className="relative flex flex-col items-center group z-10 mx-1">
+            <div key={seat.id} className="relative flex flex-col items-center z-10 mx-1">
                 <motion.button
-                    whileHover={isMyFamily && !isOccupied ? { scale: 1.15 } : {}}
-                    whileTap={isMyFamily && !isOccupied ? { scale: 0.95 } : {}}
-                    onClick={() => isMyFamily && !isOccupied && onSelectSeat(seat)}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-bold transition-all shadow-sm ${getSeatColor(seat.status, isMyFamily, isSelected)}`}
-                    disabled={!isMyFamily || isOccupied}
+                    whileHover={!isOccupied ? { scale: 1.1 } : {}}
+                    onClick={() => onSelectSeat(seat)}
+                    disabled={isOccupied && !isNovio && !isSelected} // Permitir click si está seleccionado para des-seleccionar? ManualSeatAssignment maneja toggle.
+                    className={`${isNovio ? 'w-12 h-12 text-[9px]' : 'w-9 h-9 text-[10px]'} rounded-full flex items-center justify-center font-bold transition-all duration-300 ${getSeatColor(seat.status, seat.id, isSelected)}`}
                 >
-                    {isOccupied ? "X" : seat.id.replace('A', '')}
+                    {isNovio ? (seat.id === 'NOVIO' ? 'NOVIO' : 'NOVIA') : (isOccupied ? 'X' : seat.id.replace('A', ''))}
                 </motion.button>
 
-                {/* Nombre Hover */}
                 {isOccupied && seat.assigned_guest_name && (
-                    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-[10px] px-2 py-1 rounded shadow-md whitespace-nowrap z-50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                        {seat.assigned_guest_name}
+                    <div className={`absolute ${getOffsetClass()} z-20 pointer-events-none`}>
+                        <span className="block text-royal-blue text-[12px] font-extrabold leading-tight drop-shadow-sm whitespace-pre-wrap">
+                            {seat.assigned_guest_name}
+                        </span>
                     </div>
-                )}
-                {/* Nombre Corto */}
-                {isOccupied && seat.assigned_guest_name && (
-                    <span className="absolute top-10 text-[8px] text-gray-500 font-medium w-16 text-center truncate pointer-events-none bg-white/80 rounded px-1">
-                        {seat.assigned_guest_name.split(" ")[0]}
-                    </span>
                 )}
             </div>
         );
     };
 
-    // Mesa Vertical con Cabeceras (1 Top, 4 Left, 4 Right, 1 Bottom)
     const renderVerticalTable = (tableSeats, side) => {
-        // Total 10 seats
-        // Order logic:
-        // Seat 0: Top Header
-        // Seats 1-4: Left Side (or Right depending on side?) Let's keep it simple: Side A
-        // Seats 5-8: Side B
-        // Seat 9: Bottom Header
-
-        // Asumiendo orden numérico del array:
         const seatTop = tableSeats[0];
-        const seatsSideA = tableSeats.slice(1, 5); // 4 sillas
-        const seatsSideB = tableSeats.slice(5, 9); // 4 sillas
+        const seatsSideA = tableSeats.slice(1, 5);
+        const seatsSideB = tableSeats.slice(5, 9);
         const seatBottom = tableSeats[9];
 
         return (
             <div className="flex flex-col items-center">
-                {/* Cabecera Superior */}
-                <div className="mb-2">
-                    {renderSeat(seatTop)}
-                </div>
-
+                <div className="mb-6">{renderSeat(seatTop, 'top')}</div>
                 <div className="flex flex-row items-center">
-                    {/* Lado A */}
-                    <div className="flex flex-col gap-4 mx-2">
-                        {seatsSideA.map(seat => renderSeat(seat))}
+                    <div className="flex flex-col gap-6 mr-4">
+                        {seatsSideA.map(seat => renderSeat(seat, 'right'))}
                     </div>
-
-                    {/* Mesa Surface */}
-                    <div className="w-24 h-[350px] bg-white border-2 border-slate-300 rounded-lg shadow-sm flex items-center justify-center relative">
-                        <span className="transform -rotate-90 text-slate-300 font-serif tracking-widest text-xs uppercase whitespace-nowrap">
-                            {side === 'left' ? "Mesa 1 (Novio)" : "Mesa 3 (Novia)"}
+                    <div className="w-20 h-[380px] bg-white border border-slate-200 rounded flex items-center justify-center relative shadow-sm">
+                        <span className="transform -rotate-90 text-slate-300 font-serif tracking-[0.2em] text-[10px] uppercase opacity-50 whitespace-nowrap">
+                            {side === 'left' ? "Mesa del NOVIO" : "Mesa de la NOVIA"}
                         </span>
                     </div>
-
-                    {/* Lado B */}
-                    <div className="flex flex-col gap-4 mx-2">
-                        {seatsSideB.map(seat => renderSeat(seat))}
+                    <div className="flex flex-col gap-6 ml-4">
+                        {seatsSideB.map(seat => renderSeat(seat, 'left'))}
                     </div>
                 </div>
-
-                {/* Cabecera Inferior */}
-                <div className="mt-2">
-                    {renderSeat(seatBottom)}
-                </div>
+                <div className="mt-6">{renderSeat(seatBottom, 'bottom')}</div>
             </div>
         );
     };
 
-    // Mesa Horizontal con Cabeceras (1 Left, 4 Top, 4 Bottom, 1 Right)
     const renderHorizontalTable = (guestSeats, noviosList) => {
-        // guestSeats: A11-A18 (8 total) + novios (2)
-
-        const novio = noviosList.find(n => n.id === 'NOVIO');
-        const novia = noviosList.find(n => n.id === 'NOVIA');
-
-        // Headers
-        const seatLeft = guestSeats[0]; // A11
-        const seatRight = guestSeats[guestSeats.length - 1]; // A18
-
-        // Top Row: A12, Novia, Novio, A13 (4 seats)
-        const topRow = [
-            guestSeats[1],
-            novia,
-            novio,
-            guestSeats[2]
-        ].filter(Boolean);
-
-        // Bottom Row: A14, A15, A16, A17 (4 seats)
+        const novio = noviosList.find(n => n.id === 'NOVIA');
+        const novia = noviosList.find(n => n.id === 'NOVIO');
+        const seatLeft = guestSeats[0];
+        const seatRight = guestSeats[guestSeats.length - 1];
+        const topRow = [guestSeats[1], novia, novio, guestSeats[2]].filter(Boolean);
         const bottomRow = guestSeats.slice(3, 7);
 
         return (
             <div className="flex flex-row items-center">
-                {/* Cabecera Izquierda */}
-                <div className="mr-2">
-                    {renderSeat(seatLeft)}
-                </div>
-
+                <div className="mr-12">{renderSeat(seatLeft, 'right')}</div>
                 <div className="flex flex-col items-center">
-                    <div className="flex gap-4 my-2 items-end">
-                        {topRow.map(seat => renderSeat(seat))}
+                    <div className="flex gap-24 mb-6 items-end">
+                        {renderSeat(topRow[0], 'top')}
+                        <div className="flex gap-4">
+                            {renderSeat(topRow[1], 'top')}
+                            {renderSeat(topRow[2], 'top')}
+                        </div>
+                        {renderSeat(topRow[3], 'top')}
                     </div>
-
-                    <div className="w-[350px] h-24 bg-white border-2 border-slate-300 rounded-lg shadow-sm flex items-center justify-center">
-                        <span className="text-slate-300 font-serif tracking-widest text-xs uppercase">Mesa 2 (Mesa de Honor)</span>
+                    <div className="w-[600px] h-20 bg-white border border-slate-200 rounded flex items-center justify-center shadow-sm">
+                        <span className="text-slate-300 font-serif tracking-[0.2em] text-[10px] uppercase opacity-50">Mesa de Honor</span>
                     </div>
-
-                    <div className="flex gap-4 my-2">
-                        {bottomRow.map(seat => renderSeat(seat))}
+                    <div className="flex gap-32 mt-6">
+                        {bottomRow.map(seat => renderSeat(seat, 'bottom'))}
                     </div>
                 </div>
-
-                {/* Cabecera Derecha */}
-                <div className="ml-2">
-                    {renderSeat(seatRight)}
-                </div>
+                <div className="ml-12">{renderSeat(seatRight, 'left')}</div>
             </div>
         );
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col items-center bg-gray-50 p-6 md:p-12 rounded-xl overflow-x-auto min-h-[800px]">
-
-            {/* Headers decorativos si se desean, pero la U habla por si misma */}
-
-            {/* U LAYOUT */}
-            <div className="flex flex-col items-center relative mt-8">
-
-                {/* Fila Superior: Mesa Horizontal (Mesa 2 Integrada) */}
-                <div className="z-10">
-                    {renderHorizontalTable(mesa2, novios)}
-                </div>
-
-                {/* Filas Laterales: Mesas Verticales */}
-                <div className="flex justify-center items-start gap-32 lg:gap-64 -mt-6 px-10">
-
-                    {/* Mesa Izquierda (Mesa 1) */}
-                    <div className="transform translate-y-24">
-                        {renderVerticalTable(mesa1, 'left')}
+        <div className="w-full flex flex-col items-center bg-white p-4 min-h-[900px]">
+            {/* Contenedor con overflow para permitir scroll si es necesario, aunque el scale debería ajustarlo */}
+            <div className="w-full flex justify-center overflow-x-hidden">
+                <div className="flex flex-col items-center relative mt-12 origin-top transform scale-[0.4] sm:scale-75 md:scale-90 lg:scale-100 transition-transform duration-300">
+                    <div className="mb-32">
+                        {renderHorizontalTable(mesa2, novios)}
                     </div>
-
-                    {/* Mesa Derecha (Mesa 3) */}
-                    <div className="transform translate-y-24">
+                    <div className="flex justify-center items-start gap-72 lg:gap-96">
+                        {renderVerticalTable(mesa1, 'left')}
                         {renderVerticalTable(mesa3, 'right')}
                     </div>
                 </div>
-
-                {/* Texto BODA Fondo */}
-                <div className="absolute top-[400px] opacity-10 pointer-events-none">
-                    <span className="text-8xl font-serif text-royal-blue transform rotate-0 select-none">BODA</span>
-                </div>
-
             </div>
 
-            {/* Leyenda */}
-            <div className="mt-20 flex gap-6 text-xs bg-white px-6 py-3 rounded-full shadow-md border border-gray-100 mb-8">
-                <div className="flex items-center"><div className="w-3 h-3 bg-royal-blue rounded-full mr-2"></div> Disponible</div>
-                <div className="flex items-center"><div className="w-3 h-3 bg-gold rounded-full mr-2"></div> Tu Selección</div>
-                <div className="flex items-center"><div className="w-3 h-3 bg-gray-300 rounded-full mr-2"></div> Ocupado</div>
-                <div className="flex items-center"><div className="w-3 h-3 bg-gold ring-2 ring-gold border-2 border-white rounded-full mr-2"></div> Novios</div>
+            {/* Ajuste de margen negativo para compensar el espacio blanco dejado por scale-0.4 (el scale no afecta el flujo) */}
+            <div className="-mt-[500px] sm:-mt-[200px] lg:mt-32 flex gap-8 text-[10px] uppercase tracking-widest text-gray-400 border-t pt-8 w-full max-w-lg justify-center relative z-10 bg-white">
+                <div className="flex items-center"><div className="w-2 h-2 bg-royal-blue rounded-full mr-2"></div> Disponible</div>
+                <div className="flex items-center"><div className="w-2 h-2 bg-gray-200 rounded-full mr-2"></div> Ocupado</div>
+                <div className="flex items-center"><div className="w-2 h-2 bg-gold rounded-full mr-2"></div> Novios</div>
             </div>
         </div>
     );
