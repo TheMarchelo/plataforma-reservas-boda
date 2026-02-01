@@ -131,8 +131,8 @@ export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) 
         <div className="w-full flex flex-col items-center bg-white p-2">
             {/* Contenedor principal sin overflow forzado para evitar el scroll-dentro-del-scroll */}
             <div className="w-full flex justify-center">
-                <div className="flex flex-col items-center relative mt-8 origin-top transform scale-[0.35] sm:scale-75 md:scale-90 lg:scale-100 transition-transform duration-300">
-                    <div className="mb-30">
+                <div className="flex flex-col items-center relative mt-8 origin-top transform scale-[0.45] sm:scale-75 md:scale-90 lg:scale-100 transition-transform duration-300">
+                    <div className="mb-24">
                         {renderHorizontalTable(mesa2, novios)}
                     </div>
                     <div className="flex justify-center items-start gap-72 lg:gap-96">
@@ -143,7 +143,8 @@ export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) 
             </div>
 
             {/* Ajuste de margen para la leyenda, dependiendo del escalado móvil */}
-            <div className="-mt-[550px] sm:-mt-[200px] lg:mt-24 flex gap-8 text-[10px] uppercase tracking-widest text-gray-400 border-t pt-8 w-full max-w-lg justify-center relative z-10 bg-white">
+            {/* Usamos un margen que se ajuste segun el breakpoint para evitar el solapamiento */}
+            <div className="mt-[-420px] sm:mt-12 lg:mt-24 flex flex-wrap gap-4 sm:gap-8 text-[10px] uppercase tracking-widest text-gray-400 border-t pt-8 w-full max-w-lg justify-center relative z-10 bg-white px-4">
                 <div className="flex items-center"><div className="w-2 h-2 bg-royal-blue rounded-full mr-2"></div> Disponible</div>
                 <div className="flex items-center"><div className="w-2 h-2 bg-gray-200 rounded-full mr-2"></div> Ocupado</div>
                 <div className="flex items-center"><div className="w-2 h-2 bg-gold rounded-full mr-2"></div> Novios</div>
