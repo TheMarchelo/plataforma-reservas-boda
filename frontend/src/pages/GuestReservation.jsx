@@ -55,7 +55,7 @@ export default function GuestReservation() {
             </main>
 
             <footer className="p-8 text-center text-gray-300 text-[10px] uppercase tracking-widest border-t border-gray-50 flex flex-col gap-2 items-center">
-                <span>&copy; 2026 Anthony y Daniela</span>
+                <span>&copy; 2026 Anthony & Daniela</span>
                 <a href="/admin/dashboard" className="text-gray-200 hover:text-gray-400 mb-4 transition-colors">Admin Panel</a>
             </footer>
         </div>
