@@ -144,7 +144,7 @@ export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) 
 
             {/* Ajuste de margen para la leyenda, dependiendo del escalado móvil */}
             {/* Usamos un margen que se ajuste segun el breakpoint para evitar el solapamiento */}
-            <div className="mt-[-420px] sm:mt-12 lg:mt-24 flex flex-wrap gap-4 sm:gap-8 text-[10px] uppercase tracking-widest text-gray-400 border-t pt-8 w-full max-w-lg justify-center relative z-10 bg-white px-4">
+            <div className="mt-[-350px] sm:mt-12 lg:mt-24 flex flex-wrap gap-4 sm:gap-8 text-[10px] uppercase tracking-widest text-gray-400 border-t pt-8 w-full max-w-lg justify-center relative z-10 bg-white px-4">
                 <div className="flex items-center"><div className="w-2 h-2 bg-royal-blue rounded-full mr-2"></div> Disponible</div>
                 <div className="flex items-center"><div className="w-2 h-2 bg-gray-200 rounded-full mr-2"></div> Ocupado</div>
                 <div className="flex items-center"><div className="w-2 h-2 bg-gold rounded-full mr-2"></div> Novios</div>
