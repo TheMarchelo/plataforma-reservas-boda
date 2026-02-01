@@ -78,15 +78,15 @@ export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) 
             <div className="flex flex-col items-center">
                 <div className="mb-6">{renderSeat(seatTop, 'top')}</div>
                 <div className="flex flex-row items-center">
-                    <div className="flex flex-col gap-6 mr-4">
+                    <div className="flex flex-col gap-4 mr-4">
                         {seatsSideA.map(seat => renderSeat(seat, 'right'))}
                     </div>
-                    <div className="w-20 h-[380px] bg-white border border-slate-200 rounded flex items-center justify-center relative shadow-sm">
+                    <div className="w-20 h-[300px] bg-white border border-slate-200 rounded flex items-center justify-center relative shadow-sm">
                         <span className="transform -rotate-90 text-slate-300 font-serif tracking-[0.2em] text-[10px] uppercase opacity-50 whitespace-nowrap">
                             {side === 'left' ? "Mesa del NOVIO" : "Mesa de la NOVIA"}
                         </span>
                     </div>
-                    <div className="flex flex-col gap-6 ml-4">
+                    <div className="flex flex-col gap-4 ml-4">
                         {seatsSideB.map(seat => renderSeat(seat, 'left'))}
                     </div>
                 </div>
@@ -105,7 +105,7 @@ export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) 
 
         return (
             <div className="flex flex-row items-center">
-                <div className="mr-12">{renderSeat(seatLeft, 'right')}</div>
+                <div className="mr-10">{renderSeat(seatLeft, 'right')}</div>
                 <div className="flex flex-col items-center">
                     <div className="flex gap-24 mb-6 items-end">
                         {renderSeat(topRow[0], 'top')}
@@ -128,11 +128,11 @@ export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) 
     };
 
     return (
-        <div className="w-full flex flex-col items-center bg-white p-4 min-h-[900px]">
-            {/* Contenedor con overflow para permitir scroll si es necesario, aunque el scale debería ajustarlo */}
-            <div className="w-full flex justify-center overflow-x-hidden">
-                <div className="flex flex-col items-center relative mt-12 origin-top transform scale-[0.4] sm:scale-75 md:scale-90 lg:scale-100 transition-transform duration-300">
-                    <div className="mb-32">
+        <div className="w-full flex flex-col items-center bg-white p-2">
+            {/* Contenedor principal sin overflow forzado para evitar el scroll-dentro-del-scroll */}
+            <div className="w-full flex justify-center">
+                <div className="flex flex-col items-center relative mt-8 origin-top transform scale-[0.35] sm:scale-75 md:scale-90 lg:scale-100 transition-transform duration-300">
+                    <div className="mb-30">
                         {renderHorizontalTable(mesa2, novios)}
                     </div>
                     <div className="flex justify-center items-start gap-72 lg:gap-96">
@@ -142,8 +142,8 @@ export default function SeatMap({ seats, onSelectSeat, currentSelection = [] }) 
                 </div>
             </div>
 
-            {/* Ajuste de margen negativo para compensar el espacio blanco dejado por scale-0.4 (el scale no afecta el flujo) */}
-            <div className="-mt-[500px] sm:-mt-[200px] lg:mt-32 flex gap-8 text-[10px] uppercase tracking-widest text-gray-400 border-t pt-8 w-full max-w-lg justify-center relative z-10 bg-white">
+            {/* Ajuste de margen para la leyenda, dependiendo del escalado móvil */}
+            <div className="-mt-[550px] sm:-mt-[200px] lg:mt-24 flex gap-8 text-[10px] uppercase tracking-widest text-gray-400 border-t pt-8 w-full max-w-lg justify-center relative z-10 bg-white">
                 <div className="flex items-center"><div className="w-2 h-2 bg-royal-blue rounded-full mr-2"></div> Disponible</div>
                 <div className="flex items-center"><div className="w-2 h-2 bg-gray-200 rounded-full mr-2"></div> Ocupado</div>
                 <div className="flex items-center"><div className="w-2 h-2 bg-gold rounded-full mr-2"></div> Novios</div>

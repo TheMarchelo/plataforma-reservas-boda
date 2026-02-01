@@ -26,23 +26,23 @@ export default function GuestReservation() {
 
     return (
         <div className="min-h-screen bg-white flex flex-col font-sans">
-            <header className="p-8 text-center border-b border-gray-100">
-                <h1 className="text-5xl text-royal-blue font-serif mb-2 tracking-tight">Anthony & Daniela</h1>
-                <p className="text-gold uppercase tracking-[0.3em] text-xs font-bold">Distribución de Mesas</p>
+            <header className="py-6 px-4 text-center border-b border-gray-100">
+                <h1 className="text-4xl md:text-5xl text-royal-blue font-serif mb-1 tracking-tight">Anthony & Daniela</h1>
+                <p className="text-gold uppercase tracking-[0.3em] text-[10px] md:text-xs font-bold">Distribución de Mesas</p>
             </header>
 
             <main className="flex-1 w-full bg-white">
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="w-full flex justify-center py-10"
+                    className="w-full flex justify-center py-1"
                 >
                     {loading && seats.length === 0 ? (
                         <div className="flex justify-center items-center h-96">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-royal-blue"></div>
                         </div>
                     ) : (
-                        <div className="w-full max-w-screen-2xl scale-90 md:scale-100 origin-top">
+                        <div className="w-full max-w-screen-2xl scale-[0.8] md:scale-100 origin-top">
                             <SeatMap
                                 seats={seats}
                                 selectedFamily={null}
