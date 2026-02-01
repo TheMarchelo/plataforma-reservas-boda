@@ -62,6 +62,18 @@ def update_guest(guest_id: str, guest: GuestCreate):
         
         # En este caso simple, reemplazamos los campos editables.
         doc_ref.update(update_data)
+
+        # Actualizar nombre en asientos asignados si cambió
+        new_name = update_data.get("nombre_completo")
+        if new_name:
+            seats_ref = db.collection("hacientos").where("assigned_guest_id", "==", guest_id)
+            occupied_seats = seats_ref.get()
+            
+            if occupied_seats:
+                batch = db.batch()
+                for seat in occupied_seats:
+                    batch.update(seat.reference, {"assigned_guest_name": new_name})
+                batch.commit()
         
         # Leemos de nuevo para devolver el objeto completo
         updated_doc = doc_ref.get()

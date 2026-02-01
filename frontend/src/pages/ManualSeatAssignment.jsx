@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import SeatMap from '../components/SeatMap';
 import AdminNavbar from '../components/AdminNavbar';
+import { API_URL } from '../config';
 
 export default function ManualSeatAssignment() {
     const [guests, setGuests] = useState([]);
@@ -19,8 +20,8 @@ export default function ManualSeatAssignment() {
         const fetchData = async () => {
             try {
                 const [guestsRes, seatsRes] = await Promise.all([
-                    axios.get('http://localhost:8000/guests/'),
-                    axios.get('http://localhost:8000/seats/')
+                    axios.get(`${API_URL}/guests/`),
+                    axios.get(`${API_URL}/seats/`)
                 ]);
                 setGuests(guestsRes.data);
                 setSeats(seatsRes.data);
@@ -78,7 +79,7 @@ export default function ManualSeatAssignment() {
         setShowConfirmModal(false);
         setSaving(true);
         try {
-            await axios.put('http://localhost:8000/seats/reserve-batch', {
+            await axios.put(`${API_URL}/seats/reserve-batch`, {
                 guest_id: selectedGuestId,
                 seat_ids: selectedSeatIds
             });
@@ -86,7 +87,7 @@ export default function ManualSeatAssignment() {
             alert("Asignación guardada con éxito");
 
             // Recargar datos
-            const seatsRes = await axios.get('http://localhost:8000/seats/');
+            const seatsRes = await axios.get(`${API_URL}/seats/`);
             setSeats(seatsRes.data);
             // No reseteamos guestId para que pueda seguir editando si quiere, pero refrescamos asientos
             // setSelectedSeatIds se actualiza solo por el useEffect al cambiar seats

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SeatMap from '../components/SeatMap';
 import { motion } from 'framer-motion';
+import { API_URL } from '../config';
 
 export default function GuestReservation() {
     const [seats, setSeats] = useState([]);
@@ -14,7 +15,7 @@ export default function GuestReservation() {
     const fetchSeats = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('http://localhost:8000/seats/');
+            const res = await axios.get(`${API_URL}/seats/`);
             if (res.data) setSeats(res.data);
         } catch (error) {
             console.error("Error fetching seats", error);

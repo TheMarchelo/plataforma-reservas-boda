@@ -2,4 +2,6 @@ fastapi
 uvicorn
 firebase-admin
 pydantic
+python-multipart
+requests
 python-dotenv

@@ -4,6 +4,8 @@ import GuestModal from '../components/GuestModal';
 import { useNavigate } from 'react-router-dom';
 import AdminNavbar from '../components/AdminNavbar';
 
+import { API_URL } from '../config';
+
 export default function AdminDashboard() {
     const [guests, setGuests] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,7 +21,7 @@ export default function AdminDashboard() {
         setLoading(true);
         try {
             // Ajustar URL
-            const res = await axios.get('http://localhost:8000/guests/');
+            const res = await axios.get(`${API_URL}/guests/`);
             setGuests(res.data);
         } catch (error) {
             console.error("Error cargando invitados", error);
@@ -36,10 +38,10 @@ export default function AdminDashboard() {
         try {
             if (editingGuest) {
                 // Modo Edición: Usar PUT real
-                await axios.put(`http://localhost:8000/guests/${editingGuest.id}`, guestData);
+                await axios.put(`${API_URL}/guests/${editingGuest.id}`, guestData);
             } else {
                 // Modo Creación: Usar POST
-                await axios.post('http://localhost:8000/guests/', guestData);
+                await axios.post(`${API_URL}/guests/`, guestData);
             }
 
             fetchGuests();
@@ -63,7 +65,7 @@ export default function AdminDashboard() {
     const confirmDelete = async () => {
         if (!guestToDelete) return;
         try {
-            await axios.delete(`http://localhost:8000/guests/${guestToDelete.id}`);
+            await axios.delete(`${API_URL}/guests/${guestToDelete.id}`);
             fetchGuests();
             setGuestToDelete(null);
         } catch (error) {
@@ -75,7 +77,7 @@ export default function AdminDashboard() {
     const handleResetAll = async () => {
         if (window.confirm('PELIGRO: ¿Estás seguro de que quieres LIBERAR TODAS LAS MESAS? Esto borrará todas las reservas actuales y pondrá a todos los invitados como "No Confirmados".')) {
             try {
-                await axios.post('http://localhost:8000/seats/reset');
+                await axios.post(`${API_URL}/seats/reset`);
                 alert("Se han liberado todas las mesas.");
                 fetchGuests(); // Recargar lista para ver status actualizados
             } catch (error) {
