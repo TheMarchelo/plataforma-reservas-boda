@@ -56,7 +56,10 @@ export default function GuestReservation() {
 
             <footer className="p-8 text-center text-gray-300 text-[10px] uppercase tracking-widest border-t border-gray-50 flex flex-col gap-2 items-center">
                 <span>&copy; 2026 Anthony & Daniela</span>
-                <a href="/admin/dashboard" className="text-gray-200 hover:text-gray-400 mb-4 transition-colors">Admin Panel</a>
+                <div className="flex gap-4 mt-2">
+                    <a href="https://github.com/TheMarchelo/plataforma-reservas-boda" target="_blank" rel="noopener noreferrer" className="text-gray-200 hover:text-gray-400 transition-colors">Ver Código en GitHub</a>
+                    <a href="/admin/dashboard" className="text-gray-200 hover:text-gray-400 transition-colors">Admin Panel</a>
+                </div>
             </footer>
         </div>
     );
