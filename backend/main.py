@@ -12,9 +12,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(guests.router)
-app.include_router(seats.router)
-app.include_router(auth.router)
+from routers import guests_router, seats_router, auth_router, photos_router
+
+app.include_router(guests_router)
+app.include_router(seats_router)
+app.include_router(auth_router)
+app.include_router(photos_router)
 
 
 @app.get("/")

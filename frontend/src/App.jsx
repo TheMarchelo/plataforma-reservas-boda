@@ -5,6 +5,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import ManualSeatAssignment from './pages/ManualSeatAssignment';
 
 import GuestReservation from './pages/GuestReservation';
+import PhotoGallery from './pages/PhotoGallery';
+import AdminPhotos from './pages/AdminPhotos';
+import Navbar from './components/Navbar';
 
 // Componente para proteger rutas privadas
 const PrivateRoute = ({ children }) => {
@@ -15,9 +18,11 @@ const PrivateRoute = ({ children }) => {
 function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         {/* Rutas Publicas (Invitados) */}
         <Route path="/" element={<GuestReservation />} />
+        <Route path="/photos" element={<PhotoGallery />} />
 
         {/* Rutas Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -34,6 +39,14 @@ function App() {
           element={
             <PrivateRoute>
               <ManualSeatAssignment />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/fotos"
+          element={
+            <PrivateRoute>
+              <AdminPhotos />
             </PrivateRoute>
           }
         />

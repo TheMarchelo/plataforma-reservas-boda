@@ -100,6 +100,12 @@ export default function AdminDashboard() {
                             Liberar Mesas
                         </button>
                         <button
+                            onClick={() => navigate('/admin/fotos')}
+                            className="bg-royal-blue text-white px-4 py-2 rounded font-bold shadow hover:bg-blue-800 transition"
+                        >
+                            Gestionar Fotos
+                        </button>
+                        <button
                             onClick={() => navigate('/admin/asignar')}
                             className="bg-blue-600 text-white px-4 py-2 rounded font-bold shadow hover:bg-blue-700 transition"
                         >
