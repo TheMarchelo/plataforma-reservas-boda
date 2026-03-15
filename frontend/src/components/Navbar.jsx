@@ -4,8 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 export default function Navbar() {
     const location = useLocation();
     
-    // No mostrar en login de admin
-    if (location.pathname === '/admin/login') return null;
+    // Ocultar Navbar de invitados en TODAS las rutas de admin
+    if (location.pathname.startsWith('/admin')) return null;
 
     const navLinks = [
         { name: 'Mapa de Asientos', path: '/' },

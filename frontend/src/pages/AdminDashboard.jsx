@@ -90,9 +90,9 @@ export default function AdminDashboard() {
         <div className="min-h-screen bg-gray-50 font-sans">
             <AdminNavbar />
             <main className="p-8 max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <h2 className="text-3xl text-dark-black font-serif">Lista de Invitados</h2>
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-2 md:gap-4">
                         <button
                             onClick={handleResetAll}
                             className="bg-red-500 text-white px-4 py-2 rounded font-bold shadow hover:bg-red-600 transition"
@@ -124,7 +124,8 @@ export default function AdminDashboard() {
                     {loading ? (
                         <div className="p-8 text-center text-gray-500">Cargando invitados...</div>
                     ) : (
-                        <table className="w-full text-left border-collapse">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-100 border-b border-gray-200 text-gray-600 uppercase text-sm">
                                     <th className="p-4">Nombre</th>
@@ -173,6 +174,7 @@ export default function AdminDashboard() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
                     )}
                 </div>
             </main>
