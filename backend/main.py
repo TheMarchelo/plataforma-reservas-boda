@@ -23,3 +23,7 @@ app.include_router(photos_router)
 @app.get("/")
 def read_root():
     return {"message": "Bienvenido a la API de la boda de Anthony y Daniela"}
+
+@app.get("/ping")
+def ping():
+    return {"status": "ok", "message": "pong"}
