@@ -25,5 +25,6 @@ def read_root():
     return {"message": "Bienvenido a la API de la boda de Anthony y Daniela"}
 
 @app.get("/ping")
+@app.head("/ping")
 def ping():
     return {"status": "ok", "message": "pong"}
